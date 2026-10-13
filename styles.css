@@ -1,6 +1,3 @@
-/* Celestial Vault — intentionally plain CSS with a stable filename for Neocities. */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-
 :root {
   color-scheme: dark;
   --background: #090b1b;
@@ -35,7 +32,7 @@ body::before {
   width: min(100%, 1000px);
   min-height: 100vh;
   margin-inline: auto;
-  padding: clamp(26px, 4.5vh, 48px) 24px 32px;
+  padding: clamp(0, 4.5vh, 48px) 24px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
