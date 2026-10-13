@@ -1,0 +1,141 @@
+/* Celestial Vault — intentionally plain CSS with a stable filename for Neocities. */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
+:root {
+  color-scheme: dark;
+  --background: #090b1b;
+  --text: #f7f0ff;
+  --muted: #aaa8c2;
+  --lavender: #c8b7ff;
+  --rose: #eec8e3;
+  --lantern-gold: #f5c785;
+  --indigo: #29254c;
+  --font-display: "Manrope", system-ui, sans-serif;
+  --font-ornament: "Marcellus", Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-height: 100%; background: var(--background); }
+body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--text); background: var(--background); font-family: var(--font-display); -webkit-font-smoothing: antialiased; }
+
+body::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 32rem 21rem at 50% 38%, rgba(93, 60, 147, .15), transparent 80%),
+    radial-gradient(ellipse 25rem 18rem at 50% 62%, rgba(35, 72, 125, .09), transparent 82%);
+}
+
+.splash {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1000px);
+  min-height: 100vh;
+  margin-inline: auto;
+  padding: clamp(26px, 4.5vh, 48px) 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.site-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: #f7f0ff;
+  text-shadow: 0 0 24px rgba(200, 183, 255, 0.35);
+}
+
+.illustration {
+  width: min(100%, 500px);
+  position: relative;
+  margin-top: -8px;
+  flex-shrink: 0;
+}
+.illustration__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    black 40%,
+    transparent 68%
+  );
+
+  mask-image: radial-gradient( circle at center, black 40%, transparent 68% )
+}
+
+.invitation {
+  max-width: 690px;
+  margin-top: clamp(8px, 2.7vh, 30px);
+}
+.invitation__eyebrow {
+  margin: 0 0 17px;
+  color: var(--lavender);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .28em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+.invitation__eyebrow span { color: var(--lantern-gold); margin-inline: 8px; }
+.invitation h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.45rem);
+  font-weight: 500;
+  letter-spacing: -.058em;
+  line-height: 1.17;
+  text-wrap: balance;
+}
+.invitation__description {
+  max-width: 540px;
+  margin: 19px auto 0;
+  color: var(--muted);
+  font-size: clamp(.87rem, 1.05vw, .98rem);
+  line-height: 1.85;
+  text-wrap: pretty;
+}
+.signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: clamp(28px, 5vh, 50px);
+  font-family: var(--font-ornament);
+  font-size: .77rem;
+  letter-spacing: .15em;
+  color: #8982a9;
+  text-transform: uppercase;
+}
+.signature span:nth-child(even) { color: var(--lantern-gold); }
+
+@media (max-width: 700px) {
+  .splash { padding: 40px 20px 26px; }
+  .brand { width: min(90vw, 455px); }
+  .illustration { height: clamp(280px, 43vh, 355px); margin-top: 5px; }
+  .invitation { margin-top: 4px; }
+  .invitation__eyebrow { font-size: 10px; letter-spacing: .23em; }
+  .invitation h1 { font-size: clamp(2rem, 7vw, 2.65rem); letter-spacing: -.05em; }
+  .invitation__description { max-width: 440px; font-size: .9rem; line-height: 1.75; }
+}
+@media (max-width: 420px) {
+  .splash { padding: 30px 18px 24px; }
+  .brand { width: 100%; }
+  .illustration { width: calc(100% + 26px); height: 270px; margin-top: 10px; }
+  .invitation__description { margin-top: 17px; }
+  .signature { gap: 9px; font-size: .65rem; letter-spacing: .08em; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brand { animation: settle-in .9s both; }
+  .illustration { animation: settle-in 1.2s .08s both; }
+  .invitation { animation: settle-in .8s .22s both; }
+  @keyframes settle-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+}
