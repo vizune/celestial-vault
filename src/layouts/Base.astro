@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = 'Celestial Vault — a little universe of games, art prints, trading cards, figures and treasured curiosities.' } = Astro.props;
+const pageTitle = title ? `${title} · Celestial Vault` : 'Celestial Vault';
+const path = Astro.url.pathname;
+
+const nav = [
+  { href: '/', label: 'Home', glyph: '⌂', match: (p: string) => p === '/' },
+  { href: '/collections/', label: 'Collections', glyph: '❖', match: (p: string) => p.startsWith('/collections') },
+  { href: '/wishlist/', label: 'Wishlist', glyph: '♡', match: (p: string) => p.startsWith('/wishlist') },
+  { href: '/about/', label: 'About', glyph: '❦', match: (p: string) => p.startsWith('/about') },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090b1b" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>{pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&family=Marcellus&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="shell">
+      <aside class="sidebar frame">
+        <a class="sidebar__brand" href="/">
+          <span class="sidebar__moon" aria-hidden="true">☾</span>
+          <span class="sidebar__title">Celestial <br />Vault</span>
+          <span class="sidebar__motto">Collect <i>✦</i> Preserve <i>✦</i> Cherish</span>
+        </a>
+        <nav aria-label="Main">
+          <ul class="nav">
+            {nav.map((item) => (
+              <li>
+                <a href={item.href} class:list={['nav__link', { 'is-active': item.match(path) }]} aria-current={item.match(path) ? 'page' : undefined}>
+                  <span class="nav__glyph" aria-hidden="true">{item.glyph}</span>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <p class="sidebar__quote">Small treasures<br />make a brighter world.</p>
+      </aside>
+
+      <main id="main" class="content">
+        <slot />
+        <footer class="site-footer">
+          <span>Collect</span><i aria-hidden="true">✧</i><span>Preserve</span><i aria-hidden="true">✧</i><span>Cherish</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

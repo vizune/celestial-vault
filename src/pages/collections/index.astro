@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import CollectionTile from '../../components/CollectionTile.astro';
+import { collections } from '../../lib/collections.js';
+---
+<Base title="Collections">
+  <header class="page-head frame">
+    <img class="page-head__img" src="/images/banner.jpg" alt="" style="object-position: 20% 70%" />
+    <div class="page-head__text">
+      <p class="eyebrow">The vault</p>
+      <h1 class="page-head__title">Collections</h1>
+      <p class="page-head__desc">Every shelf, binder and save file, in one place.</p>
+    </div>
+  </header>
+  <div class="tiles">
+    {collections.map((c) => <CollectionTile collection={c} />)}
+  </div>
+</Base>

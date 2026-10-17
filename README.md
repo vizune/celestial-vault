@@ -1,37 +1,85 @@
-# Celestial Vault — Coming Soon
+# Celestial Vault
 
-A responsive, static coming-soon page with **plain HTML and CSS**, designed for Neocities and inspired by the layout of the Vizune Reviews splash page.
+A static collection-logging site built with [Astro](https://astro.build). All your data lives in JSON files, and every collection gets its own searchable, sortable table page. The build output is plain HTML/CSS/JS, so it works on Nekoweb, Neocities or any other static host.
 
-## Publish to Neocities
+The coming-soon page in `splash/` is separate and isn't part of the build.
 
-Upload `index.html`, `styles.css`, and the `assets/` folder to the root of your Neocities site. There is no build step and no JavaScript.
+## Getting started
 
-You can also put these files in Astro's `public/` folder so Astro copies them without hashing their filenames. Keep in mind that Astro's normal home page route can collide with a `public/index.html`; for a coming-soon site it is simplest to deploy these files directly while building the full Astro site separately.
+Requires Node 22.12 or newer (check with `node -v`).
 
-## Replace the Photoshop artwork
+```bash
+npm install
+npm run dev       # local preview at http://localhost:4321
+npm run build     # writes the finished site to dist/
+```
 
-The temporary art is `assets/hero-placeholder.webp`, made from your Celestial Vault banner. Replace the file with your Photoshop export (same filename), or change the `src` in `index.html` to your new PNG/WebP.
+## Adding an item
 
-Suggested Photoshop canvas: 1200 × 850 px, with the main subject centered. The CSS adds a soft radial fade (`mask-image`) so artwork dissolves into the background. If you export a transparent PNG, you can remove that mask from `.illustration__image` to preserve its natural edges.
+Open the collection's file in `src/data/collections/` and add an object to `items`:
 
-The banner and the logo are your earlier assets; the art is only intended as a placeholder.
+```json
+{ "name": "Okami", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "Clover edition!", "added": "2026-10-17" }
+```
 
-## Fonts
+Optional on any item:
 
-- **Manrope** — slogan heading, introductory copy, and coming-soon label
-- **Marcellus** — small footer motto
-- The logo already supplies the decorative fantasy lettering.
+| Key     | What it does                                      |
+| ------- | ------------------------------------------------- |
+| `image` | Thumbnail, e.g. `"/images/items/okami.jpg"` (put the file in `public/images/items/`) |
+| `link`  | Makes the item name a link                        |
+| `added` | Date you logged it (handy for sorting later)      |
 
-Fonts load from Google Fonts with system-font fallbacks.
+Set `"status": "Wishlist"` on any item and it shows up on the Wishlist page automatically.
 
-## Palette
+## Adding a collection
 
-- Background `#090B1B`
-- Primary text `#F7F0FF`
-- Muted description `#AAA8C2`
-- Lavender `#C8B7FF`
-- Rose `#EEC8E3`
-- Lantern gold `#F5C785`
-- Deep indigo `#29254C`
+Copy any file in `src/data/collections/` and rename it. The filename becomes the URL, so `figures.json` becomes `/collections/figures/`. The new collection then appears on the home page, the Collections page and in its own table.
 
-Everything is defined as CSS custom properties in `styles.css`.
+```json
+{
+  "title": "Figures",
+  "order": 6,
+  "glyph": "✿",
+  "cover": "/images/covers/figures.jpg",
+  "description": "Scale figures and prize figures.",
+  "columns": [
+    { "key": "name", "label": "Figure" },
+    { "key": "series", "label": "Series" },
+    { "key": "maker", "label": "Maker" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "series"],
+  "items": []
+}
+```
+
+- **columns**: which item keys show in the table, and in what order. The first column is the item name.
+- **column `type`**: `badge` (coloured pill), `date` (formats `2026-10-17` as "17 Oct 2026"), `percent` (`4.2` becomes `4.2%`), or leave it out for plain text.
+- **filters**: column keys that get a dropdown filter.
+- **cover**: tile and header image. Leave it as `null` to use a crop of the banner, which `coverPosition` controls.
+- **order**: position on the home page.
+
+If a JSON file is missing something important (no title, an item with no name, a filter that isn't a column), the build stops with a message telling you which file to fix.
+
+### Badge colours
+
+Badge values are turned into CSS classes, e.g. "Pre-ordered" becomes `.badge--pre-ordered`. Add new colours at the bottom of the badge section in `src/styles/global.css`.
+
+## Deploying
+
+Run `npm run build` and upload the contents of `dist/` to your host's root folder.
+
+## Project layout
+
+```
+src/
+  data/collections/*.json   ← your collections (the only files you need to edit day-to-day)
+  pages/                    ← home, collections, [slug] table page, wishlist, about
+  components/               ← CollectionTile, CollectionTable
+  layouts/Base.astro        ← sidebar shell
+  styles/global.css         ← palette + all styles
+  lib/collections.js        ← loads + validates the JSON
+public/images/              ← banner, covers, item photos
+```

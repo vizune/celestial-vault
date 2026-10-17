@@ -1,0 +1,20 @@
+{
+  "title": "PS2 Games",
+  "order": 3,
+  "glyph": "◈",
+  "cover": null,
+  "coverPosition": "48% 70%",
+  "description": "The shelf of discs that raised me.",
+  "columns": [
+    { "key": "name", "label": "Game" },
+    { "key": "region", "label": "Region" },
+    { "key": "completeness", "label": "Completeness", "type": "badge" },
+    { "key": "condition", "label": "Condition", "type": "badge" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "region", "completeness"],
+  "items": [
+    { "name": "Kingdom Hearts II", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "One of my childhood games.", "added": "2026-07-21" }
+  ]
+}

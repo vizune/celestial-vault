@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import CollectionTable from '../../components/CollectionTable.astro';
+import { collections } from '../../lib/collections.js';
+
+// One page per JSON file in src/data/collections/
+export function getStaticPaths() {
+  return collections.map((collection) => ({
+    params: { slug: collection.slug },
+    props: { collection },
+  }));
+}
+
+const { collection } = Astro.props;
+---
+<Base title={collection.title} description={collection.description}>
+  <header class="page-head frame">
+    <img class="page-head__img" src={collection.cover || '/images/banner.jpg'} alt="" style={`object-position: ${collection.cover ? 'center' : collection.coverPosition || 'center'}`} />
+    <div class="page-head__text">
+      <p class="eyebrow"><a href="/collections/">Collections</a></p>
+      <h1 class="page-head__title">{collection.title}</h1>
+      {collection.description && <p class="page-head__desc">{collection.description}</p>}
+    </div>
+  </header>
+
+  <CollectionTable
+    columns={collection.columns}
+    items={collection.items}
+    filters={collection.filters}
+    caption={`${collection.title} collection`}
+  />
+</Base>

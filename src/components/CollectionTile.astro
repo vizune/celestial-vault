@@ -1,0 +1,23 @@
+---
+interface Props {
+  collection: {
+    title: string;
+    url: string;
+    cover?: string | null;
+    coverPosition?: string;
+    glyph?: string;
+    items: unknown[];
+  };
+}
+const { collection } = Astro.props;
+const image = collection.cover || '/images/banner.jpg';
+const position = collection.cover ? 'center' : collection.coverPosition || 'center';
+---
+<a class="tile" href={collection.url}>
+  <span class="tile__frame">
+    <img class:list={["tile__img", { "tile__img--crop": !collection.cover }]} src={image} alt="" loading="lazy" style={`object-position: ${position}`} />
+    <span class="tile__glyph" aria-hidden="true">{collection.glyph}</span>
+  </span>
+  <span class="tile__label">{collection.title}</span>
+  <span class="tile__count">{collection.items.length} {collection.items.length === 1 ? 'item' : 'items'}</span>
+</a>

@@ -1,0 +1,21 @@
+{
+  "title": "Pokémon Cards",
+  "order": 1,
+  "glyph": "✦",
+  "cover": null,
+  "coverPosition": "62% 40%",
+  "description": "Full arts, illustration rares and the odd childhood favourite.",
+  "columns": [
+    { "key": "name", "label": "Card" },
+    { "key": "set", "label": "Set" },
+    { "key": "number", "label": "No." },
+    { "key": "condition", "label": "Condition", "type": "badge" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "condition", "set"],
+  "items": [
+    { "name": "Marnie (Full Art)", "set": "Sword & Shield", "number": "SWSH200", "condition": "Near Mint", "status": "Owned", "notes": "One of my fav cards! ♡", "added": "2026-09-30" },
+    { "name": "Umbreon ex", "set": "Prismatic Evolutions", "number": "096/187", "condition": "Near Mint", "status": "Wishlist", "notes": "Still looking for a good price…", "added": "2026-09-12" }
+  ]
+}

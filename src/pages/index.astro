@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import CollectionTile from '../components/CollectionTile.astro';
+import { collections, totalItems, wishlist } from '../lib/collections.js';
+---
+<Base>
+  <header class="hero frame">
+    <img class="hero__img" src="/images/banner.jpg" alt="A winged girl with a glowing orb among midnight-blue wisteria and warm lanterns" width="1456" height="816" />
+    <div class="hero__text">
+      <p class="eyebrow">A haven for the things I love</p>
+      <h1 class="hero__title">Celestial <br />Vault</h1>
+      <p class="hero__motto">Collect <i>✦</i> Preserve <i>✦</i> Cherish</p>
+    </div>
+  </header>
+
+  <section class="welcome frame">
+    <div>
+      <p class="eyebrow eyebrow--left">Welcome</p>
+      <h2 class="welcome__title">A universe of <em>little treasures.</em></h2>
+      <p class="welcome__body">
+        An enchanted little archive of games, trading cards, art prints, ink and curiosities.
+        I'm gathering the things I love under one celestial sky.
+      </p>
+    </div>
+    <dl class="stats">
+      <div><dt>Collections</dt><dd>{collections.length}</dd></div>
+      <div><dt>Treasures</dt><dd>{totalItems}</dd></div>
+      <div><dt>Wished for</dt><dd>{wishlist.length}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="explore">
+    <h2 id="explore" class="section-title"><span>Explore my collections</span></h2>
+    <div class="tiles">
+      {collections.map((c) => <CollectionTile collection={c} />)}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,19 @@
+{
+  "title": "Steam Achievements",
+  "order": 6,
+  "glyph": "✧",
+  "cover": null,
+  "coverPosition": "95% 15%",
+  "description": "Hard-won trophies, the rarer the better.",
+  "columns": [
+    { "key": "name", "label": "Achievement" },
+    { "key": "game", "label": "Game" },
+    { "key": "unlocked", "label": "Unlocked", "type": "date" },
+    { "key": "rarity", "label": "Global %", "type": "percent" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["game"],
+  "items": [
+    { "name": "Example achievement", "game": "NieR:Automata", "unlocked": "2026-05-03", "rarity": 4.2, "notes": "Replace me with a real entry.", "added": "2026-05-03" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Tattoos",
+  "order": 5,
+  "glyph": "☽",
+  "cover": null,
+  "coverPosition": "88% 30%",
+  "description": "Ink I carry with me, and the pieces still on the wishlist.",
+  "columns": [
+    { "key": "name", "label": "Piece" },
+    { "key": "placement", "label": "Placement" },
+    { "key": "artist", "label": "Artist" },
+    { "key": "studio", "label": "Studio" },
+    { "key": "date", "label": "Date", "type": "date" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "placement"],
+  "items": [
+    { "name": "Example: crescent moon", "placement": "Wrist", "artist": "—", "studio": "—", "date": "2025-04-12", "status": "Owned", "notes": "Replace me with a real entry.", "added": "2026-06-01" }
+  ]
+}

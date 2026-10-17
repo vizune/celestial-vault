@@ -1,0 +1,139 @@
+---
+import { display, sortValue, slugify } from '../lib/collections.js';
+
+interface Column { key: string; label: string; type?: 'text' | 'badge' | 'date' | 'percent' | 'link' }
+interface Props {
+  columns: Column[];
+  items: Record<string, any>[];
+  filters?: string[];
+  caption: string;
+}
+
+const { columns, items, filters = [], caption } = Astro.props;
+
+// Unique, sorted options for each filter dropdown.
+const filterOptions = filters.map((key) => {
+  const column = columns.find((c) => c.key === key)!;
+  const values = [...new Set(items.map((i) => i[key]).filter((v) => v !== undefined && v !== null && v !== ''))]
+    .map(String)
+    .sort((a, b) => a.localeCompare(b));
+  return { key, label: column.label, values };
+});
+---
+<section class="listing frame" data-vault-table>
+  <div class="listing__toolbar">
+    <label class="field field--search">
+      <span class="visually-hidden">Search</span>
+      <input type="search" placeholder="Search the vault…" data-search autocomplete="off" />
+    </label>
+    {filterOptions.map((f) => (
+      <label class="field">
+        <span class="field__label">{f.label}</span>
+        <select data-filter={f.key}>
+          <option value="">All</option>
+          {f.values.map((v) => <option value={slugify(v)}>{v}</option>)}
+        </select>
+      </label>
+    ))}
+    <p class="listing__count" aria-live="polite"><span data-count>{items.length}</span> of {items.length}</p>
+  </div>
+
+  <div class="listing__scroll">
+    <table class="vault-table">
+      <caption class="visually-hidden">{caption}</caption>
+      <thead>
+        <tr>
+          {columns.map((col, i) => (
+            <th scope="col" aria-sort="none">
+              <button type="button" class="sort" data-sort-index={i}>
+                {col.label}<span class="sort__icon" aria-hidden="true"></span>
+              </button>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item) => (
+          <tr
+            data-text={columns.map((c) => display(item[c.key], c.type)).join(' ').toLowerCase()}
+            {...Object.fromEntries(filters.map((key) => [`data-f-${key}`, slugify(item[key])]))}
+          >
+            {columns.map((col, i) => {
+              const value = item[col.key];
+              const text = display(value, col.type);
+              return (
+                <td data-label={col.label} data-sort={sortValue(value, col.type)} class:list={[{ 'cell--primary': i === 0, 'cell--notes': col.key === 'notes' }]}>
+                  {i === 0 ? (
+                    <span class="item">
+                      {item.image && <img class="item__thumb" src={item.image} alt="" loading="lazy" width="44" height="44" />}
+                      <span class="item__text">
+                        {item.link ? <a href={item.link}>{text}</a> : text}
+                        {item.collection && <a class="item__sub" href={item.collectionUrl}>{item.collection}</a>}
+                      </span>
+                    </span>
+                  ) : col.type === 'badge' && text !== '—' ? (
+                    <span class={`badge badge--${slugify(value)}`}>{text}</span>
+                  ) : (
+                    text
+                  )}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="listing__empty" data-empty hidden>Nothing here matches — try another filter. ✧</p>
+  </div>
+</section>
+
+<script>
+  // Progressive enhancement: the table is complete HTML without this.
+  document.querySelectorAll<HTMLElement>('[data-vault-table]').forEach((root) => {
+    const tbody = root.querySelector('tbody')!;
+    const rows = Array.from(tbody.rows);
+    const search = root.querySelector<HTMLInputElement>('[data-search]')!;
+    const selects = Array.from(root.querySelectorAll<HTMLSelectElement>('[data-filter]'));
+    const count = root.querySelector('[data-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+
+    function applyFilters() {
+      const q = search.value.trim().toLowerCase();
+      let shown = 0;
+      rows.forEach((row) => {
+        const matchText = !q || (row.dataset.text ?? '').includes(q);
+        const matchFilters = selects.every((s) => !s.value || row.getAttribute(`data-f-${s.dataset.filter}`) === s.value);
+        const visible = matchText && matchFilters;
+        row.hidden = !visible;
+        if (visible) shown++;
+      });
+      count.textContent = String(shown);
+      empty.hidden = shown !== 0;
+    }
+
+    search.addEventListener('input', applyFilters);
+    selects.forEach((s) => s.addEventListener('change', applyFilters));
+
+    const headers = Array.from(root.querySelectorAll<HTMLTableCellElement>('thead th'));
+    root.querySelectorAll<HTMLButtonElement>('[data-sort-index]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const index = Number(button.dataset.sortIndex);
+        const th = headers[index];
+        const dir = th.getAttribute('aria-sort') === 'ascending' ? 'descending' : 'ascending';
+        headers.forEach((h) => h.setAttribute('aria-sort', 'none'));
+        th.setAttribute('aria-sort', dir);
+        const factor = dir === 'ascending' ? 1 : -1;
+        const sorted = [...rows].sort((a, b) => {
+          const av = a.cells[index].dataset.sort ?? '';
+          const bv = b.cells[index].dataset.sort ?? '';
+          if (av === '') return 1;
+          if (bv === '') return -1;
+          const an = Number(av), bn = Number(bv);
+          const cmp = !Number.isNaN(an) && !Number.isNaN(bn) ? an - bn : av.localeCompare(bv);
+          return cmp * factor;
+        });
+        tbody.append(...sorted);
+      });
+    });
+  });
+</script>

@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import { collections, totalItems } from '../lib/collections.js';
+---
+<Base title="About" description="About Celestial Vault and its keeper, Sasha.">
+  <header class="page-head frame">
+    <img class="page-head__img" src="/images/banner.jpg" alt="" style="object-position: 70% 30%" />
+    <div class="page-head__text">
+      <p class="eyebrow">Hello, traveller</p>
+      <h1 class="page-head__title">About the vault</h1>
+      <p class="page-head__desc">Every collector needs somewhere to keep their treasures. This is mine.</p>
+    </div>
+  </header>
+
+  <section class="frame prose about-intro">
+    <p class="about-lede">
+      Celestial Vault is a little archive of the things I collect: games, trading cards, art prints,
+      ink and whatever else sparkles enough to follow me home.
+    </p>
+    <p>
+      I've always been a collector at heart. Some people keep a list in their head; I wanted somewhere
+      I could lay everything out, tell the story behind each piece and keep track of the ones still out
+      there waiting to be found.
+    </p>
+  </section>
+
+  <div class="about-grid">
+    <section class="frame keeper" aria-labelledby="keeper">
+      <!-- Swap for your own photo: put it in public/images/ and update the src -->
+      <img class="keeper__photo" src="/images/banner.jpg" alt="" style="object-position: 62% 30%" />
+      <div class="prose">
+        <h2 id="keeper" class="about-heading">The Keeper</h2>
+        <p>
+          Hi, I'm <strong>Sasha</strong>. I'm a frontend engineer who has been making websites since 2004.
+          It started as a hobby and turned into a career, but the hobby part never went away.
+        </p>
+        <p>
+          When I'm not building things, you'll find me grinding JRPGs, reading visual novels, hunting for
+          indie gems, or out at the theatre, the cinema, a gig, an exhibition, a hike or a rave.
+        </p>
+      </div>
+    </section>
+
+    <section class="frame ledger" aria-labelledby="ledger">
+      <h2 id="ledger" class="about-heading"><span aria-hidden="true">☾</span> Keeper's Ledger</h2>
+      <dl>
+        <div><dt>Keeper</dt><dd>Sasha</dd></div>
+        <div><dt>Collections</dt><dd>{collections.length}</dd></div>
+        <div><dt>Treasures logged</dt><dd>{totalItems}</dd></div>
+        <div><dt>Built with</dt><dd>Astro + JSON</dd></div>
+        <div><dt>Making websites since</dt><dd>2004</dd></div>
+        <div><dt>Home</dt><dd><a href="https://vizune.net/">Vizune Network</a></dd></div>
+      </dl>
+    </section>
+  </div>
+
+  <section class="frame prose" aria-labelledby="inside">
+    <h2 id="inside" class="about-heading">What's inside</h2>
+    <ul class="inventory">
+      {collections.map((c) => (
+        <li>
+          <span class="inventory__glyph" aria-hidden="true">{c.glyph}</span>
+          <a href={c.url}>{c.title}</a>
+          <span class="inventory__count">{c.items.length}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="frame prose" aria-labelledby="old-web">
+    <h2 id="old-web" class="about-heading">A love letter to the old web</h2>
+    <p>
+      I made my first website in 2004, back when the internet was full of fan sites, shrines and
+      personal homepages that looked exactly like the people who made them. Mine were for
+      <em>Final Fantasy X-2</em> and <em>Paradise Kiss</em>.
+    </p>
+    <p>
+      Collection pages were a big part of that era: shelves of figures, binders of cards, lists of
+      every game someone owned, shared just because they loved them. Celestial Vault is my version of
+      that, dressed up in starlight.
+    </p>
+  </section>
+
+  <div class="about-grid">
+    <section class="frame prose" aria-labelledby="network">
+      <h2 id="network" class="about-heading">Part of the Vizune Network</h2>
+      <p>
+        Celestial Vault is one corner of the <a href="https://vizune.net/">Vizune Network</a>, a family of
+        personal sites about the things I love. Its sibling, <a href="https://vizune.nekoweb.org/">Vizune Reviews</a>,
+        is where I write about hidden gems in gaming.
+      </p>
+    </section>
+
+    <section class="frame prose" aria-labelledby="behind">
+      <h2 id="behind" class="about-heading">Behind the scenes</h2>
+      <p>
+        Designed and built by me with <a href="https://astro.build/">Astro</a>. Every treasure lives in a
+        plain JSON file and each collection page is generated from it.
+        <a href="https://github.com/vizune/celestial-vault">Peek at the source</a>, or
+        <a href="https://steamcommunity.com/id/vizune/">find me on Steam</a>.
+      </p>
+    </section>
+  </div>
+</Base>

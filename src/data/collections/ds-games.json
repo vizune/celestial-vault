@@ -1,0 +1,20 @@
+{
+  "title": "Nintendo DS Games",
+  "order": 4,
+  "glyph": "◇",
+  "cover": null,
+  "coverPosition": "30% 25%",
+  "description": "Dual screens, stylus scratches and a lot of happy memories.",
+  "columns": [
+    { "key": "name", "label": "Game" },
+    { "key": "region", "label": "Region" },
+    { "key": "completeness", "label": "Completeness", "type": "badge" },
+    { "key": "condition", "label": "Condition", "type": "badge" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "region", "completeness"],
+  "items": [
+    { "name": "Example: Professor Layton and the Curious Village", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "Replace me with a real entry.", "added": "2026-10-17" }
+  ]
+}

@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import CollectionTable from '../components/CollectionTable.astro';
+import { wishlist } from '../lib/collections.js';
+
+// Built automatically from every item whose status is "Wishlist".
+const columns = [
+  { key: 'name', label: 'Treasure' },
+  { key: 'collection', label: 'Collection' },
+  { key: 'notes', label: 'Notes' },
+];
+---
+<Base title="Wishlist">
+  <header class="page-head frame">
+    <img class="page-head__img" src="/images/banner.jpg" alt="" style="object-position: 90% 20%" />
+    <div class="page-head__text">
+      <p class="eyebrow">Still searching</p>
+      <h1 class="page-head__title">Wishlist</h1>
+      <p class="page-head__desc">Things I'm hoping find their way into the vault one day.</p>
+    </div>
+  </header>
+
+  {wishlist.length ? (
+    <CollectionTable columns={columns} items={wishlist} filters={['collection']} caption="Wishlist" />
+  ) : (
+    <p class="frame note">Nothing on the wishlist right now. ✧</p>
+  )}
+</Base>

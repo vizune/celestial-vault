@@ -1,0 +1,20 @@
+{
+  "title": "Art Prints",
+  "order": 2,
+  "glyph": "❀",
+  "cover": null,
+  "coverPosition": "10% 80%",
+  "description": "Prints from cons, shops and artists I love.",
+  "columns": [
+    { "key": "name", "label": "Print" },
+    { "key": "series", "label": "Series" },
+    { "key": "artist", "label": "Artist" },
+    { "key": "size", "label": "Size" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "size"],
+  "items": [
+    { "name": "Rem & Ram", "series": "Re:Zero", "artist": "—", "size": "A3", "status": "Owned", "notes": "Bought at Comiket 2023.", "added": "2026-08-02" }
+  ]
+}
