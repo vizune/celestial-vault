@@ -1,0 +1,22 @@
+{
+  "title": "Figurines",
+  "order": 4,
+  "glyph": "✿",
+  "cover": "/images/figurines-banner.jpg",
+  "coverPosition": "68% 40%",
+  "thumbnail": "/images/figurines-tile.jpg",
+  "thumbnailPosition": "center",
+  "description": "Nendoroids, figmas and scale figures keeping watch over the shelf.",
+  "columns": [
+    { "key": "name", "label": "Figurine" },
+    { "key": "type", "label": "Type" },
+    { "key": "series", "label": "Series" },
+    { "key": "maker", "label": "Maker" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "type", "series"],
+  "items": [
+    { "name": "Example: Hatsune Miku", "type": "Nendoroid", "series": "Vocaloid", "maker": "Good Smile Company", "status": "Owned", "notes": "Replace me with a real entry.", "added": "2026-10-25" }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "title": "Physical Games",
+  "order": 3,
+  "glyph": "◈",
+  "cover": "/images/games-banner.jpg",
+  "coverPosition": "100% 0%",
+  "thumbnail": "/images/games-tile.jpg",
+  "thumbnailPosition": "center",
+  "description": "Discs, cartridges and cases from every console on the shelf.",
+  "columns": [
+    { "key": "name", "label": "Game" },
+    { "key": "platform", "label": "Platform" },
+    { "key": "region", "label": "Region" },
+    { "key": "completeness", "label": "Completeness", "type": "badge" },
+    { "key": "condition", "label": "Condition", "type": "badge" },
+    { "key": "status", "label": "Status", "type": "badge" },
+    { "key": "notes", "label": "Notes" }
+  ],
+  "filters": ["status", "platform", "region", "completeness"],
+  "items": [
+    { "name": "Kingdom Hearts II", "platform": "PS2", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "One of my childhood games.", "added": "2026-07-21" },
+    { "name": "Example: Professor Layton and the Curious Village", "platform": "Nintendo DS", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "Replace me with a real entry.", "added": "2026-10-17" }
+  ]
+}

@@ -2,8 +2,10 @@
   "title": "Tattoos",
   "order": 5,
   "glyph": "☽",
-  "cover": null,
-  "coverPosition": "88% 30%",
+  "cover": "/images/tattoo.jpg",
+  "coverPosition": "50% 26%",
+  "thumbnail": "/images/tattoo.jpg",
+  "thumbnailPosition": "center",
   "description": "Ink I carry with me, and the pieces still on the wishlist.",
   "columns": [
     { "key": "name", "label": "Piece" },

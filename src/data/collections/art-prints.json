@@ -2,8 +2,10 @@
   "title": "Art Prints",
   "order": 2,
   "glyph": "❀",
-  "cover": null,
+  "cover": "/images/prints.png",
   "coverPosition": "10% 80%",
+  "thumbnail": "/images/prints.png",
+  "thumbnailPosition": "center",
   "description": "Prints from cons, shops and artists I love.",
   "columns": [
     { "key": "name", "label": "Print" },

@@ -1,0 +1,299 @@
+---
+// Admin mode for a collection page. Only rendered by `npm run dev` (see [slug].astro),
+// so it never appears on the published site. Saving goes through admin/vault-admin.mjs.
+interface Column { key: string; label: string; type?: string }
+interface Props {
+  slug: string;
+  title: string;
+  columns: Column[];
+  items: Record<string, any>[];
+}
+
+const { slug, title, columns, items } = Astro.props;
+const config = JSON.stringify({ slug, title, columns, items });
+---
+<section class="admin frame" data-admin data-config={config} hidden>
+  <div class="admin__bar">
+    <p class="admin__title"><span aria-hidden="true">✦</span> Admin mode <span class="admin__hint">only on your computer</span></p>
+
+    <form class="admin__login" data-login hidden>
+      <label class="field">
+        <span class="visually-hidden">Admin password</span>
+        <input type="password" placeholder="Password" autocomplete="current-password" data-password required />
+      </label>
+      <button type="submit" class="admin-btn admin-btn--primary">Log in</button>
+    </form>
+
+    <div class="admin__actions" data-actions hidden>
+      <button type="button" class="admin-btn admin-btn--primary" data-edit>Edit {title}</button>
+      <button type="button" class="admin-btn" data-add hidden>+ Add item</button>
+      <button type="button" class="admin-btn admin-btn--primary" data-save hidden>Save changes</button>
+      <button type="button" class="admin-btn" data-cancel hidden>Cancel</button>
+      <button type="button" class="admin-btn admin-btn--quiet" data-logout>Log out</button>
+    </div>
+
+    <p class="admin__status" data-status aria-live="polite"></p>
+  </div>
+
+  <div class="admin__editor" data-editor hidden></div>
+</section>
+
+<script>
+  type Column = { key: string; label: string; type?: string };
+  type Item = Record<string, any>;
+
+  // Fields every item can have, on top of the collection's own columns.
+  const EXTRA: Column[] = [
+    { key: 'image', label: 'Image', type: 'image' },
+    { key: 'link', label: 'Link', type: 'url' },
+    { key: 'added', label: 'Added', type: 'date' },
+  ];
+
+  // The bar stays hidden unless the page is opened with ?role=admin
+  const root = document.querySelector<HTMLElement>('[data-admin]');
+  if (root && new URLSearchParams(location.search).get('role') === 'admin') {
+    root.hidden = false;
+    const { slug, columns, items: original } = JSON.parse(root.dataset.config!) as { slug: string; columns: Column[]; items: Item[] };
+    const fields = [...columns, ...EXTRA.filter((e) => !columns.some((c) => c.key === e.key))];
+    const $ = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const login = $<HTMLFormElement>('[data-login]');
+    const actions = $('[data-actions]');
+    const editor = $('[data-editor]');
+    const status = $('[data-status]');
+    const table = document.querySelector<HTMLElement>('[data-vault-table]');
+    const editButtons = ['[data-add]', '[data-save]', '[data-cancel]'].map((s) => $(s));
+
+    let draft: Item[] = [];
+    let dirty = false;
+
+    const today = () => new Date().toISOString().slice(0, 10);
+    const say = (text: string, tone = '') => {
+      status.textContent = text;
+      status.dataset.tone = tone;
+    };
+
+    async function api(path: string, body?: object) {
+      const res = await fetch(`/__admin/${path}`, {
+        method: body ? 'POST' : 'GET',
+        headers: body ? { 'Content-Type': 'application/json' } : undefined,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? `server answered ${res.status}`);
+      return data;
+    }
+
+    function showLoggedIn(on: boolean) {
+      login.hidden = on;
+      actions.hidden = !on;
+      if (!on) stopEditing();
+    }
+
+    // Existing values for each field, offered as suggestions while typing.
+    fields.forEach((f) => {
+      if (['name', 'notes', 'image', 'link'].includes(f.key) || ['date', 'percent', 'price'].includes(f.type ?? '')) return;
+      const list = document.createElement('datalist');
+      list.id = `admin-list-${f.key}`;
+      [...new Set(original.map((i) => i[f.key]).filter(Boolean).map(String))].sort().forEach((v) => {
+        list.append(new Option(v));
+      });
+      root.append(list);
+    });
+
+    function input(field: Column, item: Item) {
+      const label = document.createElement('label');
+      label.className = 'field';
+      if (field.key === 'name') label.classList.add('admin-item__name');
+      if (field.key === 'notes') label.classList.add('admin-item__wide');
+      const caption = document.createElement('span');
+      caption.className = 'field__label';
+      caption.textContent = field.label;
+
+      const el = field.key === 'notes' ? document.createElement('textarea') : document.createElement('input');
+      if (el instanceof HTMLInputElement) {
+        el.type = field.type === 'date' ? 'date' : field.type === 'percent' || field.type === 'price' ? 'number' : field.type === 'url' ? 'url' : 'text';
+        if (field.type === 'percent') el.step = 'any';
+        if (field.type === 'price') el.step = '0.01';
+        if (field.type === 'image') el.placeholder = '/images/items/…';
+        if (document.getElementById(`admin-list-${field.key}`)) el.setAttribute('list', `admin-list-${field.key}`);
+      } else {
+        el.rows = 2;
+      }
+      if (field.key === 'name') el.required = true;
+      el.value = item[field.key] ?? '';
+      el.addEventListener('input', () => {
+        item[field.key] = (field.type === 'percent' || field.type === 'price') && el.value !== '' ? Number(el.value) : el.value;
+        dirty = true;
+      });
+      label.append(caption, el);
+      return label;
+    }
+
+    function render() {
+      editor.replaceChildren();
+      if (draft.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'admin__empty';
+        empty.textContent = 'No items yet. Use “+ Add item” to start.';
+        editor.append(empty);
+      }
+      draft.forEach((item, index) => {
+        const card = document.createElement('fieldset');
+        card.className = 'admin-item';
+        const legend = document.createElement('legend');
+        legend.textContent = `Item ${index + 1}`;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'admin-btn admin-btn--quiet admin-item__remove';
+        remove.textContent = 'Remove';
+        remove.addEventListener('click', () => {
+          draft.splice(index, 1);
+          dirty = true;
+          render();
+          say(`Removed “${item.name || 'untitled'}”. It's gone once you save.`);
+        });
+        card.append(legend, remove, ...fields.map((f) => input(f, item)));
+        editor.append(card);
+      });
+    }
+
+    function startEditing() {
+      draft = structuredClone(original);
+      dirty = false;
+      render();
+      editor.hidden = false;
+      if (table) table.hidden = true;
+      $('[data-edit]').hidden = true;
+      editButtons.forEach((b) => (b.hidden = false));
+      say('');
+    }
+
+    function stopEditing() {
+      editor.hidden = true;
+      editor.replaceChildren();
+      if (table) table.hidden = false;
+      $('[data-edit]').hidden = false;
+      editButtons.forEach((b) => (b.hidden = true));
+      dirty = false;
+    }
+
+    login.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const field = $<HTMLInputElement>('[data-password]');
+      try {
+        await api('login', { password: field.value });
+        field.value = '';
+        showLoggedIn(true);
+        say('Logged in.', 'ok');
+      } catch (error) {
+        say((error as Error).message, 'error');
+      }
+    });
+
+    $('[data-logout]').addEventListener('click', async () => {
+      if (dirty && !confirm('You have unsaved changes. Log out anyway?')) return;
+      await api('logout', {});
+      showLoggedIn(false);
+      say('Logged out.');
+    });
+
+    $('[data-edit]').addEventListener('click', startEditing);
+
+    $('[data-add]').addEventListener('click', () => {
+      draft.unshift({ name: '', added: today() });
+      dirty = true;
+      render();
+      editor.querySelector<HTMLInputElement>('input')?.focus();
+    });
+
+    $('[data-cancel]').addEventListener('click', () => {
+      if (dirty && !confirm('Discard your changes?')) return;
+      stopEditing();
+      say('');
+    });
+
+    $('[data-save]').addEventListener('click', async () => {
+      const unnamed = draft.findIndex((i) => !String(i.name ?? '').trim());
+      if (unnamed !== -1) {
+        say(`Item ${unnamed + 1} needs a name before saving.`, 'error');
+        editor.querySelectorAll<HTMLInputElement>('.admin-item__name input')[unnamed]?.focus();
+        return;
+      }
+      try {
+        say('Saving…');
+        const { saved } = await api('save', { slug, items: draft });
+        dirty = false;
+        say(`Saved ${saved} items.`, 'ok');
+        // The page rebuilds from the updated JSON file.
+        setTimeout(() => location.reload(), 400);
+      } catch (error) {
+        say((error as Error).message, 'error');
+        if ((error as Error).message.includes('log in')) showLoggedIn(false);
+      }
+    });
+
+    window.addEventListener('beforeunload', (event) => {
+      if (dirty) event.preventDefault();
+    });
+
+    api('session')
+      .then(({ loggedIn, configured }) => {
+        showLoggedIn(loggedIn);
+        if (!configured) say('Add ADMIN_PASSWORD to your .env file to use admin mode.', 'error');
+      })
+      .catch((error) => say(`Admin mode is unavailable (${(error as Error).message}). Try restarting npm run dev.`, 'error'));
+  }
+</script>
+
+<style is:global>
+  .admin { padding: 0; }
+  .admin__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 20px; }
+  .admin__title { margin: 0; font-family: var(--font-head); letter-spacing: 0.12em; text-transform: uppercase; font-size: 13px; color: var(--gold); }
+  .admin__hint { margin-left: 6px; font-family: var(--font-ui); letter-spacing: 0; text-transform: none; font-size: 12px; color: var(--faint); }
+  .admin__login, .admin__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .admin__status { margin: 0 0 0 auto; font-size: 13px; color: var(--muted); }
+  .admin__status[data-tone='ok'] { color: #9fe8d6; }
+  .admin__status[data-tone='error'] { color: #ffb3c8; }
+  .admin__editor { display: grid; gap: 14px; padding: 18px 20px 22px; border-top: 1px solid var(--frame-line); }
+  .admin__empty { margin: 0; font-family: var(--font-prose); font-size: 18px; color: var(--muted); }
+
+  .admin-btn {
+    font: inherit; font-size: 13px; font-weight: 600;
+    color: var(--text);
+    background: rgba(41, 37, 76, 0.7);
+    border: 1px solid var(--frame-line);
+    border-radius: 4px;
+    padding: 8px 14px; min-height: 38px;
+    cursor: pointer;
+  }
+  .admin-btn:hover { border-color: var(--lavender); }
+  .admin-btn--primary { color: #1d1430; background: var(--lavender); border-color: var(--lavender); }
+  .admin-btn--primary:hover { background: var(--text); }
+  .admin-btn--quiet { background: transparent; color: var(--muted); }
+  .admin[hidden], .admin [hidden], [data-vault-table][hidden] { display: none !important; }
+
+  .admin-item {
+    position: relative;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px 14px;
+    margin: 0; padding: 16px 18px 18px;
+    border: 1px solid var(--frame-line); border-radius: var(--radius);
+    background: rgba(9, 11, 27, 0.45);
+  }
+  .admin-item legend { padding: 0 6px; font-family: var(--font-head); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lavender); }
+  .admin-item__remove { position: absolute; top: -12px; right: 12px; min-height: 0; padding: 2px 10px; background: var(--panel-solid); }
+  .admin-item__name { grid-column: span 2; }
+  .admin-item__wide { grid-column: 1 / -1; }
+  .admin-item textarea {
+    font: inherit; font-size: 14px; color: var(--text);
+    background: rgba(9, 11, 27, 0.8);
+    border: 1px solid var(--frame-line); border-radius: 4px;
+    padding: 8px 12px; resize: vertical;
+  }
+  .admin-item textarea:focus { border-color: var(--lavender); outline: none; box-shadow: 0 0 0 3px rgba(200, 183, 255, 0.15); }
+  .admin-item input[type='date'] { color-scheme: dark; }
+
+  @media (max-width: 560px) {
+    .admin-item__name { grid-column: 1 / -1; }
+    .admin__status { margin-left: 0; width: 100%; }
+  }
+</style>

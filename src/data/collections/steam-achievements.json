@@ -2,8 +2,10 @@
   "title": "Steam Achievements",
   "order": 6,
   "glyph": "✧",
-  "cover": null,
-  "coverPosition": "95% 15%",
+  "cover": "/images/steam-banner.png",
+  "coverPosition": "50% 50%",
+  "thumbnail": "/images/steam.jpg",
+  "thumbnailPosition": "center",
   "description": "Hard-won trophies, the rarer the better.",
   "columns": [
     { "key": "name", "label": "Achievement" },

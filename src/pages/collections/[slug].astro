@@ -12,16 +12,23 @@ export function getStaticPaths() {
 }
 
 const { collection } = Astro.props;
+
+// Admin mode is only loaded by `npm run dev`, so it stays out of the published site.
+const AdminEditor = import.meta.env.DEV ? (await import('../../components/AdminEditor.astro')).default : null;
 ---
 <Base title={collection.title} description={collection.description}>
   <header class="page-head frame">
-    <img class="page-head__img" src={collection.cover || '/images/banner.jpg'} alt="" style={`object-position: ${collection.cover ? 'center' : collection.coverPosition || 'center'}`} />
+    <img class="page-head__img" src={collection.cover || '/images/banner.jpg'} alt="" style={`object-position: ${collection.cover ? collection.coverPosition : 'center'}`} />
     <div class="page-head__text">
       <p class="eyebrow"><a href="/collections/">Collections</a></p>
       <h1 class="page-head__title">{collection.title}</h1>
       {collection.description && <p class="page-head__desc">{collection.description}</p>}
     </div>
   </header>
+
+  {AdminEditor && (
+    <AdminEditor slug={collection.slug} title={collection.title} columns={collection.columns} items={collection.items} />
+  )}
 
   <CollectionTable
     columns={collection.columns}

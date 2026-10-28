@@ -14,12 +14,22 @@ npm run dev       # local preview at http://localhost:4321
 npm run build     # writes the finished site to dist/
 ```
 
+## Admin mode (edit without touching JSON)
+
+While `npm run dev` is running, every collection page has an **Admin mode** bar above the table.
+
+1. Log in with the password in your `.env` file (`ADMIN_PASSWORD=…`). Change it to anything you like and restart `npm run dev`. If you ever lose `.env`, copy `.env.example`.
+2. Click **Edit**, then use **+ Add item**, change any field, or **Remove** a row. Fields suggest values you've already used, like platforms and statuses.
+3. Click **Save changes**. The collection's JSON file is rewritten and the page reloads with your edits.
+
+Admin mode only exists on your own computer. It isn't part of `npm run build`, so nothing about it is uploaded to your host. When you're happy with your edits, build and upload as usual.
+
 ## Adding an item
 
-Open the collection's file in `src/data/collections/` and add an object to `items`:
+You can also edit the JSON by hand: open the collection's file in `src/data/collections/` and add an object to `items`:
 
 ```json
-{ "name": "Okami", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "Clover edition!", "added": "2026-10-17" }
+{ "name": "Okami", "platform": "PS2", "region": "PAL", "completeness": "CIB", "condition": "Good", "status": "Owned", "notes": "Clover edition!", "added": "2026-10-17" }
 ```
 
 Optional on any item:
@@ -34,17 +44,17 @@ Set `"status": "Wishlist"` on any item and it shows up on the Wishlist page auto
 
 ## Adding a collection
 
-Copy any file in `src/data/collections/` and rename it. The filename becomes the URL, so `figures.json` becomes `/collections/figures/`. The new collection then appears on the home page, the Collections page and in its own table.
+Copy any file in `src/data/collections/` and rename it. The filename becomes the URL, so `plushies.json` becomes `/collections/plushies/`. The new collection then appears on the home page, the Collections page and in its own table.
 
 ```json
 {
-  "title": "Figures",
-  "order": 6,
-  "glyph": "✿",
-  "cover": "/images/covers/figures.jpg",
-  "description": "Scale figures and prize figures.",
+  "title": "Plushies",
+  "order": 7,
+  "glyph": "❦",
+  "cover": "/images/covers/plushies.jpg",
+  "description": "Soft friends from claw machines and con stalls.",
   "columns": [
-    { "key": "name", "label": "Figure" },
+    { "key": "name", "label": "Plushie" },
     { "key": "series", "label": "Series" },
     { "key": "maker", "label": "Maker" },
     { "key": "status", "label": "Status", "type": "badge" },
@@ -82,4 +92,5 @@ src/
   styles/global.css         ← palette + all styles
   lib/collections.js        ← loads + validates the JSON
 public/images/              ← banner, covers, item photos
+admin/vault-admin.mjs       ← admin mode's save/login (dev server only)
 ```

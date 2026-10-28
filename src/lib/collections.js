@@ -1,6 +1,6 @@
 // Loads every JSON file in src/data/collections/ at build time.
 // Each file becomes one collection; its filename becomes the URL slug,
-// e.g. ps2-games.json -> /collections/ps2-games/
+// e.g. physical-games.json -> /collections/physical-games/
 const files = import.meta.glob('../data/collections/*.json', { eager: true });
 
 function check(slug, data) {
@@ -60,6 +60,7 @@ export function display(value, type) {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   }
   if (type === 'percent') return `${Number(value).toFixed(1)}%`;
+  if (type === 'price') return `£${Number(value).toFixed(2)}`;
   return String(value);
 }
 
@@ -67,6 +68,6 @@ export function display(value, type) {
 export function sortValue(value, type) {
   if (value === null || value === undefined || value === '') return '';
   if (type === 'date') return String(new Date(value).getTime() || '');
-  if (type === 'percent' || typeof value === 'number') return String(Number(value));
+  if (type === 'percent' || type === 'price' || typeof value === 'number') return String(Number(value));
   return String(value).toLowerCase();
 }
